@@ -1,6 +1,7 @@
 from scrapy.spider import BaseSpider
-from scrapy.selector import HtmlXPathSelector
+from scrapy.selector import Selector
 from scrapy.http import Request
+from scrapy.utils.response import get_base_url
 
 from cpasbien.items import TorrentItem
 
@@ -12,22 +13,21 @@ class CpasbienSpider(BaseSpider):
   "cpasbien.pe"
  ]
 
- def __init__(self, *args, **kwargs): 
+ def __init__(self, *args, **kwargs):
   super(CpasbienSpider, self).__init__(**kwargs)
-  self.keywords = kwargs['keywords'].split(',')
+  self.keywords = kwargs['keywords']
+  print self.keywords
   self.start_urls = [
-   'http://cpasbien.pe/recherche']
+   'http://cpasbien.pe/recherche/' 
+    + self.keywords 
+    + '.html'
+  ]
 
- def parse(self, response):
-  items = []
-  for entry in entries:
-    item = TorrentItem()
-    item['name'] = entry.select("/div[@id='center-top']/href[1]/text()[2]").extract()
-    item['description'] = entry.select("//div[@id='description']").extract()
-    item['size'] = entry.select("//div[@id='informations-torrent']/strong[2]/text()[2]").extract()
-    item['url'] = entry.select("/div[@id=download-torrent']/href[1]/text()[2]").extract()
-    for s in self.keywords:
-     if s.lower() in item['title'][0].lower():
-      items.append(item)
-      break
-  return items
+def parse(self, response):
+  sel = Selector(response)
+  item = TorrentItem()
+  item['name'] = sel.xpath("/div[@id='center-top']/href[1]/text()[2]").extract()
+  item['description'] = sel.xpath("//div[@id='description']").extract()
+  item['size'] = sel.xpath("//div[@id='informations-torrent']/strong[2]/text()      [2]").extract()
+  item['url'] = sel.xpath("/div[@id=download-torrent']/href[1]/text()[2]").extract()
+  return item
