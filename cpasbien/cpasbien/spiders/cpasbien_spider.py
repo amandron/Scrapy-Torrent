@@ -1,11 +1,11 @@
-from scrapy.spider import BaseSpider
+from scrapy.spider import Spider
 from scrapy.selector import Selector
 from scrapy.http import Request
 from scrapy.utils.response import get_base_url
 
 from cpasbien.items import TorrentItem
 
-class CpasbienSpider(BaseSpider):
+class CpasbienSpider(Spider):
 
  name = "cpasbien"
 
